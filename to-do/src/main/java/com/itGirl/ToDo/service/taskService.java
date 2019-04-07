@@ -18,6 +18,10 @@ public class taskService {
         return taskList;
     }
 
+    /*public List<Object> getTaskById(int taskId) {
+        return taskRepository.findById(taskId);
+    }*/
+
     public Task getTaskById(int userEmailId) {
         return taskRepository.findById(userEmailId).get();
     }

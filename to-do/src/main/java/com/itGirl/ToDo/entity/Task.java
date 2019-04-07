@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -23,11 +24,11 @@ public class Task {
     private int taskId;
 
     @Column(name="BOOKED_AT")
-    private Timestamp bookedAt;
+    private Date bookedAt;
 
     @Column(name="PRIORITY")
     private String priority;
 
     @Column(name="USER_EMAIL_ID")
-    private String userEmailId;
+    private int userEmailId;
 }
