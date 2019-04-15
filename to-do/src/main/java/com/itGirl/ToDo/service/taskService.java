@@ -4,6 +4,7 @@ import com.itGirl.ToDo.entity.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,14 @@ public class taskService {
         return taskList;
     }
 
-    /*public List<Object> getTaskById(int taskId) {
-        return taskRepository.findById(taskId);
-    }*/
+    public List<Task> getTaskByEmailId(int userEmailId) {
+        List<Task> taskList = new ArrayList<>();
+        taskRepository.findByUserEmailId(userEmailId).forEach(task -> taskList.add((Task) task));
+        return taskList;
+    }
 
-    public Task getTaskById(int userEmailId) {
-        return taskRepository.findById(userEmailId).get();
+    public Task getTaskById(int taskId) {
+        return taskRepository.findById(taskId).get();
     }
 
     public Task saveOrUpdate(Task task) {
@@ -31,7 +34,14 @@ public class taskService {
         return task;
     }
 
-    public void delete(int userEmailId) {
-        taskRepository.deleteById(userEmailId);
+    public void delete(int taskId) {
+
+        taskRepository.deleteById(taskId);
     }
+
+    @Transactional
+    public void deleteByUserEmailId(int userEmailId) {
+        taskRepository.deleteByUserEmailId(userEmailId);
+    }
+
 }
