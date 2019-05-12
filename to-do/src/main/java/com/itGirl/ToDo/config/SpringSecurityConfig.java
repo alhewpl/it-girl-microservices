@@ -1,30 +1,35 @@
 package com.itGirl.ToDo.config;
 
+import com.itGirl.ToDo.service.CustomAuthenticationServiceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 // disable security autoconfig
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // Create 1 normal user & 1 admin
+    @Autowired
+    CustomAuthenticationServiceProvider customAuthProvider;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication()
-                .withUser("user").password("{noop}password").roles("USER")
-                .and()
-                .withUser("admin").password("{noop}admin").roles("USER", "ADMIN");
-
+        auth.authenticationProvider(customAuthProvider);
     }
+
 
     // Secure the endpoints with HTTP Basic authentication.
     // Normal user can access all requests except for delete.
@@ -41,9 +46,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "toDo/fetch_task/{userEmailId}").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "toDo/all_tasks").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "toDo/delete_task/{userEmailId}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "actuator/*").hasRole("ADMIN")
                 .and()
                 .csrf().disable()
-                .formLogin().disable();
+                .formLogin().disable()
+                .headers().frameOptions().disable(); // to enable h2 console
     }
 
 }
