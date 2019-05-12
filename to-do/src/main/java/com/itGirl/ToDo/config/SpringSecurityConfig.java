@@ -46,7 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "toDo/fetch_task/{userEmailId}").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "toDo/all_tasks").hasRole("USER")
                 .antMatchers(HttpMethod.DELETE, "toDo/delete_task/{userEmailId}").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "actuator/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "actuator/**").hasRole("ADMIN")
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
