@@ -12,22 +12,26 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-// disable security autoconfig
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
-@Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    CustomAuthenticationServiceProvider customAuthProvider;
+    //@Autowired
+    //CustomAuthenticationServiceProvider customAuthProvider;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(customAuthProvider);
+       // auth.authenticationProvider(customAuthProvider);
+    	
+    	auth.inMemoryAuthentication()
+        .withUser("user").password("{noop}password").roles("USER")
+        .and()
+        .withUser("admin").password("{noop}password").roles("USER", "ADMIN");
     }
 
 
@@ -41,16 +45,19 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "toDo/create_task").hasAuthority("USER")
-                .antMatchers(HttpMethod.PUT, "toDo/update_task/{taskId}").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET, "toDo/fetch_task/{userEmailId}").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET, "toDo/all_tasks").hasAuthority("USER")
-                .antMatchers(HttpMethod.DELETE, "toDo/delete_task/{userEmailId}").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.GET, "actuator/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.POST, "toDo/create_task").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "toDo/update_task/{taskId}").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "toDo/fetch_task/{userEmailId}").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "toDo/all_tasks").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "toDo/delete_task/{userEmailId}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/h2-console/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/actuator/**").hasRole("ADMIN")
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
-                .headers().frameOptions().disable(); // to enable h2 console
+                .headers().frameOptions().disable()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);; // to enable h2 console
     }
 
 }
