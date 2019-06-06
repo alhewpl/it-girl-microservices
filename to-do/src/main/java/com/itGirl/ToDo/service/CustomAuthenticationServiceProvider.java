@@ -1,7 +1,6 @@
 package com.itGirl.ToDo.service;
 
 import com.itGirl.ToDo.entity.User;
-import org.bouncycastle.crypto.generators.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,16 +28,18 @@ public class CustomAuthenticationServiceProvider implements AuthenticationProvid
         UsernamePasswordAuthenticationToken authenticationToken = null;
 
         User user = userRepository.findByUserName(username);
+        String hashedPwd = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(16));
 
         if (user != null) {
-            if (username.equals(user.getUserName()) && password.equals(user.getPassword())) {
+            if ((username.equals(user.getUserName()) && BCrypt.checkpw(password, hashedPwd))) {
+            //if (username.equals(user.getUserName()) && password.equals(user.getPassword())) {
                 Collection<GrantedAuthority> grantedAuthorities = getGrantedAuthorities(user);
-                authenticationToken = new UsernamePasswordAuthenticationToken(
-                        new org.springframework.security.core.userdetails.User(username, password, grantedAuthorities), password, grantedAuthorities);
+                authenticationToken = new UsernamePasswordAuthenticationToken(username, password, grantedAuthorities);
             } else {
                 throw new UsernameNotFoundException("User name "+ username + " not found");
             }
         }
+        System.out.println(authenticationToken);
         return authenticationToken;
     }
 

@@ -6,6 +6,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -47,7 +48,7 @@ public class TasksController {
     // if the userEmailId has any task associated with the that taskId, delete the task. If the optional param not
     // passed, delete all the tasks associated with that particular email id.
     @ApiOperation(value = "Delete single task or all tasks of a particular user, given either the user's email id or the task id", response = String.class)
-    @RequestMapping(path = "/delete_task/{taskId}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/delete_task/{userEmailId}", method = RequestMethod.DELETE)
     private String deleteTask(@PathVariable int userEmailId,
                               @RequestParam(value="taskId") Optional<Integer> taskId) {
          List<Task> tasksToDelete = taskService.getTaskByEmailId(userEmailId);

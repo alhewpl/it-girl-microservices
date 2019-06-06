@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -41,12 +42,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "toDo/create_task").hasAuthority("USER")
-                .antMatchers(HttpMethod.PUT, "toDo/update_task/{taskId}").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET, "toDo/fetch_task/{userEmailId}").hasAuthority("USER")
-                .antMatchers(HttpMethod.GET, "toDo/all_tasks").hasAuthority("USER")
-                .antMatchers(HttpMethod.DELETE, "toDo/delete_task/{userEmailId}").hasAuthority("ADMIN")
-                .antMatchers(HttpMethod.GET, "actuator/**").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.POST, "/toDo/create_task").hasAuthority("USER")
+                .antMatchers(HttpMethod.PUT, "/toDo/update_task/{taskId}").hasAuthority("USER")
+                .antMatchers(HttpMethod.GET, "/toDo/fetch_task/{userEmailId}").hasAuthority("USER")
+                .antMatchers(HttpMethod.GET, "/toDo/all_tasks").hasAuthority("USER")
+                .antMatchers(HttpMethod.DELETE, "/toDo/delete_task/{userEmailId}").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET, "/actuator/**").hasAuthority("ADMIN")
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
