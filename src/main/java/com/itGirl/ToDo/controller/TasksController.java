@@ -5,8 +5,9 @@ import com.itGirl.ToDo.service.taskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Api(value="To Do Tasks", description="Operations pertaining to tasks in users calendar")
+@FeignClient(name="ToDoService" )
+@RibbonClient(name="ToDoService")
 @RestController
 @RequestMapping(path="/toDo")
 public class TasksController {

@@ -32,31 +32,21 @@ public class CustomAuthenticationServiceProvider implements AuthenticationProvid
 
         if (user != null) {
             if ((username.equals(user.getUserName()) && BCrypt.checkpw(password, hashedPwd))) {
-            // if (username.equals(user.getUserName()) && password.equals(user.getPassword())) {
                 Collection<GrantedAuthority> grantedAuthorities = getGrantedAuthorities(user);
                 authenticationToken = new UsernamePasswordAuthenticationToken(username, password, grantedAuthorities);
             } else {
                 throw new UsernameNotFoundException("User name "+ username + " not found");
             }
         }
-        System.out.println(authenticationToken);
         return authenticationToken;
     }
-
-    /* STILL TO DO : hash password first using Bcrypt hashpw and check validity above
-    (Bcrypt.checkpw(plaintext, hashed)
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-
-        return new BCryptPasswordEncoder();
-    }*/
 
     private Collection<GrantedAuthority> getGrantedAuthorities(User user) {
         Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if (user.getRole().equals("ADMIN")){
-            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            grantedAuthorities.add(new SimpleGrantedAuthority("ADMIN"));
         }
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        grantedAuthorities.add(new SimpleGrantedAuthority("USER"));
         return grantedAuthorities;
     }
 
